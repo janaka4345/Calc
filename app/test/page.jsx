@@ -1,37 +1,54 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 
 export default function page() {
   const [digit, setDigit] = useState("0");
-  const inputStr = useRef("");
+  const [numArr, setNumArr] = useState([]);
+  const [opArr, setOpArr] = useState([]);
+  const [action, setAction] = useState(false); //update number or operand was last used
 
   function handleNumberClick(number) {
+    setAction(true);
     if (digit === "0" && number === "0") {
       return;
     }
     digit === "0"
       ? setDigit(number)
       : setDigit((prev) => (prev != undefined ? prev + number : number));
-    inputStr.current += number;
   }
 
   function handleOperation(operator) {
-    inputStr.current += operator;
+    action
+      ? setNumArr((prev) =>
+          !prev.includes(undefined) ? [...prev, digit] : [digit]
+        )
+      : null;
+
+    if (operator === "=") {
+      return;
+    }
+    setOpArr((prev1) => [...prev1, operator]);
     setDigit("0");
+    setAction(false);
   }
 
   function handleClear() {
-    setDigit("0");
-    inputStr.current = "";
+    setDigit(() => "0");
+    setOpArr([]);
+    setNumArr([]);
+    setAction(false);
   }
 
   function handleOutput() {
-    const lastChar = inputStr.current.charAt(inputStr.current.length - 1);
-    if (isNaN(lastChar)) {
-      inputStr.current = inputStr.current.slice(0, -1);
-    }
-    inputStr.current = eval(inputStr.current).toString();
-    setDigit(inputStr.current);
+    handleOperation("=");
+    let str = "";
+    numArr.map((val, i) => {
+      str += parseFloat(val).toString() + opArr[i];
+    });
+    digit != "0" ? (str += digit) : (str = str.slice(0, -1));
+    str != undefined ? setDigit(eval(str).toString()) : setDigit("0");
+    setNumArr([]);
+    setOpArr([]);
   }
   function handleDotClick() {
     if (!digit.includes(".")) {
@@ -43,9 +60,8 @@ export default function page() {
     <div className="w-full  h-screen flex">
       <div className="w-[350px] shrink-0 my-auto mx-auto items-center h-[480px] gap-3 p-3 grid grid-cols-4 border">
         <div className="col-start-3 col-end-5">
-          <h1 className="h-5 ml-auto w-fit  mr-4">{inputStr.current}</h1>
           <h1 id="display" className="h-5 ml-auto w-fit  mr-4">
-            {digit}
+            {digit}{" "}
           </h1>
         </div>
         <button

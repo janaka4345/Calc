@@ -3,36 +3,70 @@ import React, { useRef, useState } from "react";
 
 export default function page() {
   const [digit, setDigit] = useState("0");
-  const inputStr = useRef("");
+  const prevOperator = useRef("");
+  const str = useRef("");
 
   function handleNumberClick(number) {
+    prevOperator.current = "";
     if (digit === "0" && number === "0") {
       return;
     }
     digit === "0"
       ? setDigit(number)
       : setDigit((prev) => (prev != undefined ? prev + number : number));
-    inputStr.current += number;
+    str.current += number;
   }
 
-  function handleOperation(operator) {
-    inputStr.current += operator;
+  function handleOperation(currentOperator) {
+    if (prevOperator === "+" && currentOperator === "-") {
+      str.current = str.current.slice(0, -1);
+      str.current += currentOperator;
+    }
+    if (prevOperator === "-" && currentOperator === "+") {
+      str.current = str.current.slice(0, -1);
+      str.current += currentOperator;
+    }
+    if (prevOperator === currentOperator) {
+      str.current = str.current.slice(0, -1);
+      str.current += currentOperator;
+    }
+
+    if (prevOperator === "*" && currentOperator === "/") {
+      str.current = str.current.slice(0, -1);
+      str.current += currentOperator;
+    }
+    if (prevOperator === "/" && currentOperator === "*") {
+      str.current = str.current.slice(0, -1);
+      str.current += currentOperator;
+    }
+    if (prevOperator === currentOperator) {
+      str.current = str.current.slice(0, -1);
+      str.current += currentOperator;
+    }
+    if (prevOperator === "") {
+      str.current += currentOperator;
+    }
     setDigit("0");
+    prevOperator.current = currentOperator;
   }
 
   function handleClear() {
     setDigit("0");
-    inputStr.current = "";
+    str.current = "";
+    prevOperator.current = "";
   }
 
   function handleOutput() {
-    const lastChar = inputStr.current.charAt(inputStr.current.length - 1);
+    const lastChar = str.current.charAt(str.current.length - 1);
     if (isNaN(lastChar)) {
-      inputStr.current = inputStr.current.slice(0, -1);
+      str.current = str.current.slice(0, -1);
     }
-    inputStr.current = eval(inputStr.current).toString();
-    setDigit(inputStr.current);
+    console.log(str.current);
+    str.current = eval(str.current).toString();
+    setDigit(str.current);
+    prevOperator.current = "";
   }
+
   function handleDotClick() {
     if (!digit.includes(".")) {
       handleNumberClick(".");
@@ -43,7 +77,6 @@ export default function page() {
     <div className="w-full  h-screen flex">
       <div className="w-[350px] shrink-0 my-auto mx-auto items-center h-[480px] gap-3 p-3 grid grid-cols-4 border">
         <div className="col-start-3 col-end-5">
-          <h1 className="h-5 ml-auto w-fit  mr-4">{inputStr.current}</h1>
           <h1 id="display" className="h-5 ml-auto w-fit  mr-4">
             {digit}
           </h1>
