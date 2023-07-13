@@ -23,9 +23,9 @@ export default function page() {
   }, [output]);
 
   function handleNumberClick(number) {
-    // if (digit === "0" && number === "0") {
-    //   return;
-    // }
+    if (digit === "0" && number === "0") {
+      return;
+    }
     digit === "0"
       ? setDigit(number)
       : setDigit((prev) => (prev != undefined ? prev + number : number));
