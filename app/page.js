@@ -1,28 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 export default function page() {
   const [digit, setDigit] = useState("0");
   const [numArr, setNumArr] = useState([]);
   const [opArr, setOpArr] = useState([]);
-  const [result, setResult] = useState("0");
-  const [output, setOutput] = useState(false);
-  // console.log(evsl());
-  useEffect(() => {
-    digit === "0" ? setResult("0") : setResult(digit);
-  }, [digit]);
-
-  useEffect(() => {
-    let str = "";
-    numArr.map((val, i) => {
-      str += val + opArr[i];
-    });
-    str += digit;
-
-    console.log(str);
-    // setDigit(eval(str.substring(0, str.length - 1)));
-    // }, [output]);
-  }, []);
 
   function handleNumberClick(number) {
     if (digit === "0" && number === "0") {
@@ -32,36 +14,35 @@ export default function page() {
       ? setDigit(number)
       : setDigit((prev) => (prev != undefined ? prev + number : number));
   }
+
   function handleOperation(operator) {
     setNumArr((prev) =>
       !prev.includes(undefined) ? [...prev, digit] : [digit]
     );
-    operator != "=" ? setOpArr((prev1) => [...prev1, operator]) : "";
-    setDigit("");
-    console.log(numArr);
-    console.log(opArr);
-  }
-  function handleClear() {
+
+    if (operator === "=") {
+      return;
+    }
+    setOpArr((prev1) => [...prev1, operator]);
     setDigit("0");
+  }
+
+  function handleClear() {
+    setDigit(() => "0");
     setOpArr([]);
     setNumArr([]);
-    setResult(0);
   }
+
   function handleOutput() {
     handleOperation("=");
-    // setOutput(!output);
     let str = "";
-
     numArr.map((val, i) => {
-      str += val + opArr[i];
+      str += parseFloat(val).toString() + opArr[i];
     });
-
-    digit != "" ? (str += digit) : (str = str.slice(0, -1));
-
-    // if (str.charAt(str.length - 1)=="/") {
-    // }
-    console.log(str);
-    setDigit(eval(str));
+    digit != "0" ? (str += digit) : (str = str.slice(0, -1));
+    setDigit(eval(str).toString());
+    setNumArr([]);
+    setOpArr([]);
   }
   function handleDotClick() {
     if (!digit.includes(".")) {
@@ -72,8 +53,10 @@ export default function page() {
   return (
     <div className="w-full  h-screen flex">
       <div className="w-[350px] shrink-0 my-auto mx-auto items-center h-[480px] gap-3 p-3 grid grid-cols-4 border">
-        <div id="display" className="col-start-3 col-end-5">
-          <h1 className="h-5 ml-auto w-fit  mr-4">{result} </h1>
+        <div className="col-start-3 col-end-5">
+          <h1 id="display" className="h-5 ml-auto w-fit  mr-4">
+            {digit}{" "}
+          </h1>
         </div>
         <button
           id="clear"
