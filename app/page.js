@@ -7,7 +7,7 @@ export default function page() {
   const [opArr, setOpArr] = useState([]);
   const [result, setResult] = useState("0");
   const [output, setOutput] = useState(false);
-
+  // console.log(evsl());
   useEffect(() => {
     digit === "0" ? setResult("0") : setResult(digit);
   }, [digit]);
@@ -19,8 +19,10 @@ export default function page() {
     });
     str += digit;
 
-    setDigit(eval(str.substring(0, str.length - 1)));
-  }, [output]);
+    console.log(str);
+    // setDigit(eval(str.substring(0, str.length - 1)));
+    // }, [output]);
+  }, []);
 
   function handleNumberClick(number) {
     if (digit === "0" && number === "0") {
@@ -34,8 +36,10 @@ export default function page() {
     setNumArr((prev) =>
       !prev.includes(undefined) ? [...prev, digit] : [digit]
     );
-    setOpArr((prev1) => [...prev1, operator]);
+    operator != "=" ? setOpArr((prev1) => [...prev1, operator]) : "";
     setDigit("");
+    console.log(numArr);
+    console.log(opArr);
   }
   function handleClear() {
     setDigit("0");
@@ -45,7 +49,19 @@ export default function page() {
   }
   function handleOutput() {
     handleOperation("=");
-    setOutput(!output);
+    // setOutput(!output);
+    let str = "";
+
+    numArr.map((val, i) => {
+      str += val + opArr[i];
+    });
+
+    digit != "" ? (str += digit) : (str = str.slice(0, -1));
+
+    // if (str.charAt(str.length - 1)=="/") {
+    // }
+    console.log(str);
+    setDigit(eval(str));
   }
   function handleDotClick() {
     if (!digit.includes(".")) {
